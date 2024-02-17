@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import {GroupSavings} from "./TalkTroveGroupSavings.s.sol";
+import {GroupSavings} from "./TalkTroveGroupSaving.s.sol";
 import {TalkTrove} from "./TalkTrove.s.sol";
 
 contract GroupContract {

@@ -3,7 +3,7 @@
 pragma solidity ^0.8.18;
 
 import {GroupContract} from "./TalkTroveGroupC.s.sol";
-import {GroupSavings} from "./TalkTroveGroupSavings.s.sol";
+import {GroupSavings} from "./TalkTroveGroupSaving.s.sol";
 
 // OpenZeppelin Imports
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
@@ -105,59 +105,26 @@ contract TalkTrove {
     /**
      * Events
      */
-    event accountCreatedUserRegistered(
-        address indexed userAddress,
-        string username,
-        string additionalInfo
-    );
-    event RequestSent(
-        address indexed sender,
-        address indexed receiver,
-        uint256 timestamp
-    );
+    event accountCreatedUserRegistered(address indexed userAddress, string username, string additionalInfo);
+    event RequestSent(address indexed sender, address indexed receiver, uint256 timestamp);
     event FriendRequestAccepted(address indexed receiver, uint256 timestamp);
-    event FriendRequestDeclined(
-        address indexed sender,
-        address indexed receiver,
-        uint256 timestamp
-    );
-    event FriendRemoved(
-        address indexed exfriend,
-        address indexed receiver,
-        uint256 timestamp
-    );
+    event FriendRequestDeclined(address indexed sender, address indexed receiver, uint256 timestamp);
+    event FriendRemoved(address indexed exfriend, address indexed receiver, uint256 timestamp);
     event pingSent(
-        address indexed receiver,
-        address indexed sender,
-        uint256 amount,
-        string indexed description,
-        uint256 timestamp
+        address indexed receiver, address indexed sender, uint256 amount, string indexed description, uint256 timestamp
     );
-    event pingDeclined(
-        address indexed _sender,
-        address indexed receiver,
-        uint256 timestamp
-    );
-    event pingRequestDeclined(
-        address indexed _sender,
-        address indexed receiver,
-        uint256 timestamp
-    );
-    event FundSent(
-        address indexed recipient,
-        address indexed sender,
-        uint256 amount,
-        uint256 timestamp
-    );
+    event pingDeclined(address indexed _sender, address indexed receiver, uint256 timestamp);
+    event pingRequestDeclined(address indexed _sender, address indexed receiver, uint256 timestamp);
+    event FundSent(address indexed recipient, address indexed sender, uint256 amount, uint256 timestamp);
 
     ///////////////////////////
     ////// Functions /////////
     //////////////////////////
 
-    function createAccount(
-        string memory _username,
-        string memory _usersAbout
-    ) public returns (bool accountCreated, address id, string memory username) {
+    function createAccount(string memory _username, string memory _usersAbout)
+        public
+        returns (bool accountCreated, address id, string memory username)
+    {
         if (bytes(_username).length <= 0) {
             revert TalkTrove_NameCannotBeEmpty();
         }
@@ -175,18 +142,10 @@ contract TalkTrove {
         // Initialize the friends array for the new user
         address[] memory emptyFriendsList;
 
-        users[msg.sender] = User({
-            name: _username,
-            userInfoOrDescription: _usersAbout,
-            id: msg.sender,
-            myFriends: emptyFriendsList
-        }); // setting the msg.sender as struct User
-        User memory newUser = User({
-            name: _username,
-            userInfoOrDescription: _usersAbout,
-            id: msg.sender,
-            myFriends: emptyFriendsList
-        });
+        users[msg.sender] =
+            User({name: _username, userInfoOrDescription: _usersAbout, id: msg.sender, myFriends: emptyFriendsList}); // setting the msg.sender as struct User
+        User memory newUser =
+            User({name: _username, userInfoOrDescription: _usersAbout, id: msg.sender, myFriends: emptyFriendsList});
         AllUsers.push(newUser);
         userNameToAddress[_username] = msg.sender;
 
@@ -195,18 +154,12 @@ contract TalkTrove {
         return (true, msg.sender, _username);
     }
 
-    function searchUser(
-        string memory usersName
-    ) public view returns (string memory, string memory, address) {
+    function searchUser(string memory usersName) public view returns (string memory, string memory, address) {
         address userAddress = userNameToAddress[usersName];
         if (userAddress == address(0)) {
             revert TalkTrove_UserNotFound();
         }
-        return (
-            users[userAddress].name,
-            users[userAddress].userInfoOrDescription,
-            users[userAddress].id
-        );
+        return (users[userAddress].name, users[userAddress].userInfoOrDescription, users[userAddress].id);
     }
 
     function sendFriendRequest(address _to) public returns (address recipient) {
@@ -231,11 +184,8 @@ contract TalkTrove {
         }
 
         // Create a new friend request
-        FriendRequest memory newFriendRequest = FriendRequest({
-            sender: msg.sender,
-            reciever: _to,
-            State: RequestState.pending
-        });
+        FriendRequest memory newFriendRequest =
+            FriendRequest({sender: msg.sender, reciever: _to, State: RequestState.pending});
         friendRequests[_to].push(newFriendRequest);
 
         emit RequestSent(msg.sender, _to, block.timestamp);
@@ -249,25 +199,17 @@ contract TalkTrove {
                 revert TalkTrove_AlreadyDeclinedThisRequest();
             }
             if (
-                friendRequests[msg.sender][i].reciever == msg.sender &&
-                friendRequests[msg.sender][i].State == RequestState.pending
+                friendRequests[msg.sender][i].reciever == msg.sender
+                    && friendRequests[msg.sender][i].State == RequestState.pending
             ) {
                 // Update the state of the request
                 friendRequests[msg.sender][i].State = RequestState.accepted;
                 // Update the friendship status to true
-                areFriends[msg.sender][
-                    friendRequests[msg.sender][i].sender
-                ] = true;
-                areFriends[friendRequests[msg.sender][i].sender][
-                    msg.sender
-                ] = true;
+                areFriends[msg.sender][friendRequests[msg.sender][i].sender] = true;
+                areFriends[friendRequests[msg.sender][i].sender][msg.sender] = true;
                 // update the friend list for both the users
-                users[msg.sender].myFriends.push(
-                    friendRequests[msg.sender][i].sender
-                );
-                users[friendRequests[msg.sender][i].sender].myFriends.push(
-                    msg.sender
-                );
+                users[msg.sender].myFriends.push(friendRequests[msg.sender][i].sender);
+                users[friendRequests[msg.sender][i].sender].myFriends.push(msg.sender);
                 break;
             }
         }
@@ -280,9 +222,8 @@ contract TalkTrove {
                 revert TalkTrove_AlreadyAcceptedThisRequest();
             }
             if (
-                friendRequests[msg.sender][i].reciever == msg.sender &&
-                friendRequests[msg.sender][i].sender == _sender &&
-                friendRequests[msg.sender][i].State == RequestState.pending
+                friendRequests[msg.sender][i].reciever == msg.sender && friendRequests[msg.sender][i].sender == _sender
+                    && friendRequests[msg.sender][i].State == RequestState.pending
             ) {
                 friendRequests[msg.sender][i].State = RequestState.declined;
                 break;
@@ -311,11 +252,7 @@ contract TalkTrove {
         emit FriendRemoved(_exfriend, msg.sender, block.timestamp);
     }
 
-    function pingMutualFriendForMoney(
-        address _to,
-        uint256 _amount,
-        string memory _description
-    ) public {
+    function pingMutualFriendForMoney(address _to, uint256 _amount, string memory _description) public {
         if (!areFriends[msg.sender][_to]) {
             revert TalkTrove_NotFriendsWithThisUser();
         }
@@ -362,9 +299,8 @@ contract TalkTrove {
             }
 
             if (
-                pinged[msg.sender][i].receiver == msg.sender &&
-                pinged[msg.sender][i].amount == _amount &&
-                pinged[msg.sender][i].stateOfPing == RequestState.pending
+                pinged[msg.sender][i].receiver == msg.sender && pinged[msg.sender][i].amount == _amount
+                    && pinged[msg.sender][i].stateOfPing == RequestState.pending
             ) {
                 // Check if the ping has already been completed
                 if (pinged[msg.sender][i].stateOfPing != RequestState.pending) {
@@ -399,10 +335,9 @@ contract TalkTrove {
                 revert TalkTrove_AlreadyAcceptedThisRequest();
             }
             if (
-                pinged[msg.sender][i].receiver == msg.sender &&
-                pinged[msg.sender][i].sender == _sender &&
-                pinged[msg.sender][i].stateOfPing == RequestState.pending &&
-                pinged[msg.sender][i].stateOfPing != RequestState.accepted
+                pinged[msg.sender][i].receiver == msg.sender && pinged[msg.sender][i].sender == _sender
+                    && pinged[msg.sender][i].stateOfPing == RequestState.pending
+                    && pinged[msg.sender][i].stateOfPing != RequestState.accepted
             ) {
                 // Update the state of the ping request to "declined"
                 pinged[msg.sender][i].stateOfPing = RequestState.declined;
@@ -482,10 +417,9 @@ contract TalkTrove {
     function claimFunds(uint256 _claimCode) external {
         for (uint256 i = 0; i < transactions.length; i++) {
             if (
-                transactions[i].recipient == msg.sender &&
-                keccak256(abi.encode(_claimCode)) ==
-                transactions[i].claimCode &&
-                transactions[i].stateOfTx == transactionState.pending
+                transactions[i].recipient == msg.sender
+                    && keccak256(abi.encode(_claimCode)) == transactions[i].claimCode
+                    && transactions[i].stateOfTx == transactionState.pending
             ) {
                 // Check if the recipient matches the sender
                 if (transactions[i].recipient != msg.sender) {
@@ -493,10 +427,7 @@ contract TalkTrove {
                 }
 
                 // Check if the claim code matches
-                if (
-                    transactions[i].claimCode !=
-                    keccak256(abi.encode(_claimCode))
-                ) {
+                if (transactions[i].claimCode != keccak256(abi.encode(_claimCode))) {
                     revert TalkTrove_IncorrectClaimCode();
                 }
 
@@ -524,10 +455,7 @@ contract TalkTrove {
     function ReclaimFunds() public {
         for (uint256 i = 0; i < transactions.length; i++) {
             // Transaction storage transaction = transactions[i];
-            if (
-                transactions[i].sender == msg.sender &&
-                transactions[i].stateOfTx == transactionState.pending
-            ) {
+            if (transactions[i].sender == msg.sender && transactions[i].stateOfTx == transactionState.pending) {
                 if (transactions[i].sender != msg.sender) {
                     revert TalkTrove_NotTheInitialSender();
                 }
@@ -545,24 +473,19 @@ contract TalkTrove {
         }
     }
 
-    function checkUpKeep(
-        bytes memory /*checkData*/
-    ) public view returns (bool upkeepNeeded, bytes memory performData) {
+    function checkUpKeep(bytes memory /*checkData*/ )
+        public
+        view
+        returns (bool upkeepNeeded, bytes memory performData)
+    {
         for (uint256 i = 0; i < transactions.length; i++) {
-            bool timeForRevert = (block.timestamp -
-                transactions[i].timeStamp) >= transactions[i].timegiven;
-            bool isNotYetClaimed = (transactions[i].stateOfTx !=
-                transactionState.claimed);
-            bool isNotYetRelaimed = (transactions[i].stateOfTx !=
-                transactionState.reclaimed);
+            bool timeForRevert = (block.timestamp - transactions[i].timeStamp) >= transactions[i].timegiven;
+            bool isNotYetClaimed = (transactions[i].stateOfTx != transactionState.claimed);
+            bool isNotYetRelaimed = (transactions[i].stateOfTx != transactionState.reclaimed);
             bool hasBalance = address(this).balance > 0;
             bool etherWasSent = transactions[i].amount > 0;
             //performData = checkData;
-            upkeepNeeded = (timeForRevert &&
-                isNotYetClaimed &&
-                hasBalance &&
-                isNotYetRelaimed &&
-                etherWasSent);
+            upkeepNeeded = (timeForRevert && isNotYetClaimed && hasBalance && isNotYetRelaimed && etherWasSent);
             if (upkeepNeeded) {
                 return (true, "0x0");
             }
@@ -570,8 +493,8 @@ contract TalkTrove {
         return (false, "0x0");
     }
 
-    function performUpkeep(bytes calldata /*performData*/) external {
-        (bool upKeepNeeded, ) = checkUpKeep("");
+    function performUpkeep(bytes calldata /*performData*/ ) external {
+        (bool upKeepNeeded,) = checkUpKeep("");
         require(upKeepNeeded, "no upkeep needed");
         ReclaimFunds();
         //performData;
@@ -590,10 +513,7 @@ contract TalkTrove {
         return false;
     }
 
-    function _checkIfAlreadyFriends(
-        address _user,
-        address _friend
-    ) public view returns (bool) {
+    function _checkIfAlreadyFriends(address _user, address _friend) public view returns (bool) {
         return areFriends[_user][_friend];
     }
 }

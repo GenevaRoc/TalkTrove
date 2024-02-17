@@ -27,26 +27,14 @@ contract GroupSavings {
 
     SavingsGroup[] public savingsGroups;
 
-    event NewSavingsGroup(
-        uint256 indexed groupId,
-        address indexed creator,
-        uint256 goalAmount,
-        uint256 releaseTime
-    );
-    event Contribution(
-        uint256 indexed groupId,
-        address indexed contributor,
-        uint256 amount
-    );
+    event NewSavingsGroup(uint256 indexed groupId, address indexed creator, uint256 goalAmount, uint256 releaseTime);
+    event Contribution(uint256 indexed groupId, address indexed contributor, uint256 amount);
     event FundsReleased(uint256 indexed groupId, uint256 amount);
 
     TalkTrove private immutable i_tT;
     GroupContract private immutable i_tTGC;
 
-    function createSavingsGroup(
-        uint256 _goalAmount,
-        uint256 _releaseTime
-    ) external {
+    function createSavingsGroup(uint256 _goalAmount, uint256 _releaseTime) external {
         if (_releaseTime > block.timestamp) {
             revert TalkTrove_ReleaseTimeMustBeInFuture();
         }

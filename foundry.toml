@@ -9,4 +9,11 @@ remappings = [
     '@chainlink/contracts-ccip/=lib/ccip/contracts/',
 ]
 
+ffi = true
+fs_permissions = [{ access = "read", path = "./broadcast" }]
+
+
+[rpc_endpoints]
+fuji = "${FUJI_RPC_URL}"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
