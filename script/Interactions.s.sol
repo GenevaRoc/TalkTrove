@@ -2,21 +2,28 @@
 pragma solidity ^0.8.18;
 
 import {Script, console} from "forge-std/Script.sol";
-import {TalkTroveGroupSaving} from "../src/TalkTroveGroupSaving.s.sol";
+import {TalkTrove} from "../src/TalkTrove.s.sol";
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
 contract ContributeTalkTroveGroupSaving is Script {
     uint256 SEND_VALUE = 0.1 ether;
 
-    function contributeTalkTroveGroupSaving(address mostRecentlyDeployed) public {
+    function contributeTalkTroveGroupSaving(
+        address mostRecentlyDeployed
+    ) public {
         vm.startBroadcast();
-        TalkTroveGroupSaving(payable(mostRecentlyDeployed)).contribute{value: SEND_VALUE}();
+        TalkTrove(payable(mostRecentlyDeployed)).contributeToGroup{
+            value: SEND_VALUE
+        }();
         vm.stopBroadcast();
         console.log("Contributed to TalkTroveGroupSavingwith %s", SEND_VALUE);
     }
 
     function run() external {
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("TalkTroveGroupSaving", block.chainid);
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "TalkTroveGroupSaving",
+            block.chainid
+        );
         contributeTalkTroveGroupSaving(mostRecentlyDeployed);
     }
 }
@@ -24,13 +31,16 @@ contract ContributeTalkTroveGroupSaving is Script {
 contract ReleaseTalkTroveGroupSaving is Script {
     function releaseTalkTroveGroupSaving(address mostRecentlyDeployed) public {
         vm.startBroadcast();
-        TalkTroveGroupSaving(payable(mostRecentlyDeployed)).releaseFunds();
+        TalkTrove(payable(mostRecentlyDeployed)).releaseFunds();
         vm.stopBroadcast();
         console.log("Releaase TalkTroveGroupSaving balance!");
     }
 
     function run() external {
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("TalkTroveGroupSaving", block.chainid);
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+            "TalkTroveGroupSaving",
+            block.chainid
+        );
         releaseTalkTroveGroupSaving(mostRecentlyDeployed);
     }
 }
