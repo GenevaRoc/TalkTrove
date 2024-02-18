@@ -34,9 +34,10 @@ contract TalkTroveTest is StdCheats, Test {
     error talktrovetest_registrationfailed();
 
     //event accountCreatedUserRegistered(address indexed userAddress, string username, string additionalInfo);
+    address priceFeed;
 
     function setUp() public {
-        talkTrove = new TalkTrove();
+        talkTrove = new TalkTrove(priceFeed);
         //groupSavings = new GroupSavings();
         //groupChat = new GroupContract();
         vm.deal(USER1, STARTING_USER_BALANCE);
@@ -342,7 +343,7 @@ contract TalkTroveTest is StdCheats, Test {
         // );
     }
 
-    function testCanContributeToSavings() public {
+    function testCanContributeToSavings() public registerUsers {
         vm.prank(USER1);
         talkTrove.createSavingsGroup(
             goalAmount,
@@ -361,7 +362,7 @@ contract TalkTroveTest is StdCheats, Test {
         );
     }
 
-    function testCanReleaseFunds() public {
+    function testCanReleaseFunds() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createSavingsGroup(
             goalAmount,
@@ -386,18 +387,18 @@ contract TalkTroveTest is StdCheats, Test {
     ///// GROUP CHAT TEST //////
     ///////////////////////////
 
-    function testCanCreateGroupChat() public {
+    function testCanCreateGroupChat() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
     }
 
-    function testCanSendGroupInvite() public {
+    function testCanSendGroupInvite() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.inviteMember(0, USER2);
     }
 
-    function testCanAcceptInvite() public {
+    function testCanAcceptInvite() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.inviteMember(0, USER2);
@@ -407,7 +408,7 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCanDeclineGroupInvite() public {
+    function testCanDeclineGroupInvite() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.inviteMember(0, USER2);
@@ -417,7 +418,10 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCannotAcceptGroupInviteIfAlreadyDecline() public {
+    function testCannotAcceptGroupInviteIfAlreadyDecline()
+        public
+        registerUsers
+    {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.inviteMember(0, USER2);
@@ -430,7 +434,10 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCannotDeclineInvitationIfAlreadyAccepted() public {
+    function testCannotDeclineInvitationIfAlreadyAccepted()
+        public
+        registerUsers
+    {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.inviteMember(0, USER2);
@@ -443,14 +450,14 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCanAddMember() public {
+    function testCanAddMember() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");
         vm.stopPrank();
     }
 
-    function testCannotAddAMemberIfAlreadyMember() public {
+    function testCannotAddAMemberIfAlreadyMember() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");
@@ -460,7 +467,10 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testAssignsAdminWhenInitialAdminLeavesGroup() public {
+    function testAssignsAdminWhenInitialAdminLeavesGroup()
+        public
+        registerUsers
+    {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");
@@ -471,7 +481,7 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCanAssignAdmin() public {
+    function testCanAssignAdmin() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");
@@ -479,7 +489,7 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testCanRemoveMember() public {
+    function testCanRemoveMember() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");
@@ -487,7 +497,7 @@ contract TalkTroveTest is StdCheats, Test {
         vm.stopPrank();
     }
 
-    function testMemberCanLeaveGroup() public {
+    function testMemberCanLeaveGroup() public registerUsers {
         vm.startPrank(USER1);
         talkTrove.createGroup("emma", "group chat test");
         talkTrove.addMember(0, USER2, "ejiro");

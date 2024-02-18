@@ -13,7 +13,7 @@ contract DeployTalkTrove is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast();
-        TalkTrove talkTrove = new TalkTrove(priceFeed);
+        TalkTrove talkTrove = new TalkTrove(priceFeed); //priceFeed
         vm.stopBroadcast();
         return (talkTrove, helperConfig);
     }

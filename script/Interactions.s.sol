@@ -14,14 +14,14 @@ contract ContributeTalkTroveGroupSaving is Script {
         vm.startBroadcast();
         TalkTrove(payable(mostRecentlyDeployed)).contributeToGroup{
             value: SEND_VALUE
-        }();
+        }(0, 0);
         vm.stopBroadcast();
         console.log("Contributed to TalkTroveGroupSavingwith %s", SEND_VALUE);
     }
 
     function run() external {
         address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
-            "TalkTroveGroupSaving",
+            "TalkTrovesGroupSaving",
             block.chainid
         );
         contributeTalkTroveGroupSaving(mostRecentlyDeployed);
@@ -31,7 +31,7 @@ contract ContributeTalkTroveGroupSaving is Script {
 contract ReleaseTalkTroveGroupSaving is Script {
     function releaseTalkTroveGroupSaving(address mostRecentlyDeployed) public {
         vm.startBroadcast();
-        TalkTrove(payable(mostRecentlyDeployed)).releaseFunds();
+        TalkTrove(payable(mostRecentlyDeployed)).releaseSavings(0);
         vm.stopBroadcast();
         console.log("Releaase TalkTroveGroupSaving balance!");
     }
