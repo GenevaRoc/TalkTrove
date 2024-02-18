@@ -7,40 +7,41 @@ import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
 contract ContributeTalkTroveGroupSaving is Script {
     uint256 SEND_VALUE = 0.1 ether;
-
-    function contributeTalkTroveGroupSaving(
-        address mostRecentlyDeployed
-    ) public {
-        vm.startBroadcast();
-        TalkTrove(payable(mostRecentlyDeployed)).contributeToGroup{
-            value: SEND_VALUE
-        }();
-        vm.stopBroadcast();
-        console.log("Contributed to TalkTroveGroupSavingwith %s", SEND_VALUE);
-    }
-
-    function run() external {
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
-            "TalkTroveGroupSaving",
-            block.chainid
-        );
-        contributeTalkTroveGroupSaving(mostRecentlyDeployed);
-    }
 }
 
-contract ReleaseTalkTroveGroupSaving is Script {
-    function releaseTalkTroveGroupSaving(address mostRecentlyDeployed) public {
-        vm.startBroadcast();
-        TalkTrove(payable(mostRecentlyDeployed)).releaseFunds();
-        vm.stopBroadcast();
-        console.log("Releaase TalkTroveGroupSaving balance!");
-    }
+// function contributeTalkTroveGroupSaving(
+// address mostRecentlyDeployed
+// ) public {
+// vm.startBroadcast();
+// TalkTrove(payable(mostRecentlyDeployed)).contributeToGroup{
+//    value: SEND_VALUE
+//   }();
+///    vm.stopBroadcast();
+//   console.log("Contributed to TalkTroveGroupSavingwith %s", SEND_VALUE);
+//}
 
-    function run() external {
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
-            "TalkTroveGroupSaving",
-            block.chainid
-        );
-        releaseTalkTroveGroupSaving(mostRecentlyDeployed);
-    }
-}
+// function run() external {
+// address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+//  "TalkTroveGroupSaving",
+//  block.chainid
+//    );
+//  contributeTalkTroveGroupSaving(mostRecentlyDeployed);
+// }
+//}
+
+//contract ReleaseTalkTroveGroupSaving is Script {
+// function releaseTalkTroveGroupSaving(address mostRecentlyDeployed) public {
+//  vm.startBroadcast();
+//  TalkTrove(payable(mostRecentlyDeployed)).releaseFunds();
+//  vm.stopBroadcast();
+// console.log("Releaase TalkTroveGroupSaving balance!");
+//}
+
+//function run() external {
+//   address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
+//      "TalkTroveGroupSaving",
+//     block.chainid
+// );
+//  releaseTalkTroveGroupSaving(mostRecentlyDeployed);
+// }
+//}

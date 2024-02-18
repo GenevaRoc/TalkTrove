@@ -356,29 +356,28 @@ contract TalkTroveTest is StdCheats, Test {
         TalkTrove.SavingsGroup memory talktrove = talkTrove.getSavingsGroups();
         vm.stopPrank();
         assertTrue(
-            talkTrove.isMember(talkTrove.groupIdHash, USER1),
+            talkTrove.isMember(talktrove.groupIdHash, USER1),
             "User should have joined the group"
         );
     }
 
     function testCanReleaseFunds() public {
         vm.startPrank(USER1);
-        groupSavings.createSavingsGroup(
+        talkTrove.createSavingsGroup(
             goalAmount,
             releaseTime,
             groupId,
             nameOfGroup
         );
-        payable(groupSavings).transfer(AMOUNT_TO_SEND);
-        groupSavings.contributeToGroup(groupId, AMOUNT_TO_SEND);
+        payable(talkTrove).transfer(AMOUNT_TO_SEND);
+        talkTrove.contributeToGroup(groupId, AMOUNT_TO_SEND);
         vm.warp(block.timestamp + 180 + 1);
         vm.roll(block.number + 180 + 1);
-        groupSavings.releaseSavings(groupId);
-        GroupSavings.SavingsGroup memory groupsave = groupSavings
-            .getSavingsGroups();
+        talkTrove.releaseSavings(groupId);
+        TalkTrove.SavingsGroup memory talktrove = talkTrove.getSavingsGroups();
         vm.stopPrank();
         assertTrue(
-            groupSavings.isMember(groupsave.groupIdHash, USER1),
+            talkTrove.isMember(talktrove.groupIdHash, USER1),
             "User should have joined the group"
         );
     }
@@ -389,112 +388,112 @@ contract TalkTroveTest is StdCheats, Test {
 
     function testCanCreateGroupChat() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
+        talkTrove.createGroup("emma", "group chat test");
     }
 
     function testCanSendGroupInvite() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.inviteMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.inviteMember(0, USER2);
     }
 
     function testCanAcceptInvite() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.inviteMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.inviteMember(0, USER2);
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.acceptInvitation();
+        talkTrove.acceptInvitation();
         vm.stopPrank();
     }
 
     function testCanDeclineGroupInvite() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.inviteMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.inviteMember(0, USER2);
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.declineInvitation();
+        talkTrove.declineInvitation();
         vm.stopPrank();
     }
 
     function testCannotAcceptGroupInviteIfAlreadyDecline() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.inviteMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.inviteMember(0, USER2);
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.declineInvitation();
+        talkTrove.declineInvitation();
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.acceptInvitation();
+        talkTrove.acceptInvitation();
         vm.stopPrank();
     }
 
     function testCannotDeclineInvitationIfAlreadyAccepted() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.inviteMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.inviteMember(0, USER2);
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.acceptInvitation();
+        talkTrove.acceptInvitation();
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.declineInvitation();
+        talkTrove.declineInvitation();
         vm.stopPrank();
     }
 
     function testCanAddMember() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
         vm.stopPrank();
     }
 
     function testCannotAddAMemberIfAlreadyMember() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
         vm.stopPrank();
         vm.startPrank(USER1);
-        groupChat.addMember(0, USER2, "ejiro");
+        talkTrove.addMember(0, USER2, "ejiro");
         vm.stopPrank();
     }
 
     function testAssignsAdminWhenInitialAdminLeavesGroup() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
-        groupChat.assignAdmin(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
+        talkTrove.assignAdmin(0, USER2);
         vm.stopPrank();
         vm.startPrank(USER1);
-        groupChat.adminLeaveGroup(0);
+        talkTrove.adminLeaveGroup(0);
         vm.stopPrank();
     }
 
     function testCanAssignAdmin() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
-        groupChat.assignAdmin(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
+        talkTrove.assignAdmin(0, USER2);
         vm.stopPrank();
     }
 
     function testCanRemoveMember() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
-        groupChat.removeMember(0, USER2);
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
+        talkTrove.removeMember(0, USER2);
         vm.stopPrank();
     }
 
     function testMemberCanLeaveGroup() public {
         vm.startPrank(USER1);
-        groupChat.createGroup("emma", "group chat test");
-        groupChat.addMember(0, USER2, "ejiro");
+        talkTrove.createGroup("emma", "group chat test");
+        talkTrove.addMember(0, USER2, "ejiro");
         vm.stopPrank();
         vm.startPrank(USER2);
-        groupChat.userLeaveGroup(0);
+        talkTrove.userLeaveGroup(0);
     }
 
     modifier registerUsers() {

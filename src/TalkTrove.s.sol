@@ -284,6 +284,7 @@ contract TalkTrove {
     ///////////////////////////
     ////// Functions /////////
     //////////////////////////
+   // constructor(address p)
 
     function createAccount(
         string memory _username,
@@ -1126,7 +1127,7 @@ contract TalkTrove {
         uint256 minutesValue
     ) public pure returns (uint256) {
         return minutesValue / MINUTES_IN_AN_HOUR;
-    } // helper convert function
+    } // function used
 
     function convertMinutesToDays(
         uint256 minutesValue
@@ -1138,5 +1139,5 @@ contract TalkTrove {
         uint256 daysValue
     ) public pure returns (uint256) {
         return daysValue * MINUTES_IN_A_DAY;
-    } // function used
+    } // helper convert function
 }
